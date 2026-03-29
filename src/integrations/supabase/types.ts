@@ -14,7 +14,303 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      carbon_activities: {
+        Row: {
+          activity_type: string
+          co2_saved_kg: number
+          created_at: string
+          credits_earned: number
+          description: string | null
+          id: string
+          user_id: string
+          verified: boolean
+        }
+        Insert: {
+          activity_type: string
+          co2_saved_kg?: number
+          created_at?: string
+          credits_earned?: number
+          description?: string | null
+          id?: string
+          user_id: string
+          verified?: boolean
+        }
+        Update: {
+          activity_type?: string
+          co2_saved_kg?: number
+          created_at?: string
+          credits_earned?: number
+          description?: string | null
+          id?: string
+          user_id?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          language: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          language?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          language?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      community_posts: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          location: string | null
+          post_type: string
+          quantity_kg: number | null
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          post_type: string
+          quantity_kg?: number | null
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          post_type?: string
+          quantity_kg?: number | null
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      insurance_claims: {
+        Row: {
+          aadhar_number: string
+          claim_number: string
+          created_at: string
+          crop_type: string
+          damage_image_url: string | null
+          date_of_birth: string
+          estimated_loss: number
+          full_name: string
+          id: string
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          aadhar_number: string
+          claim_number: string
+          created_at?: string
+          crop_type: string
+          damage_image_url?: string | null
+          date_of_birth: string
+          estimated_loss: number
+          full_name: string
+          id?: string
+          phone: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          aadhar_number?: string
+          claim_number?: string
+          created_at?: string
+          crop_type?: string
+          damage_image_url?: string | null
+          date_of_birth?: string
+          estimated_loss?: number
+          full_name?: string
+          id?: string
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          read?: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          aadhar_number: string | null
+          avatar_url: string | null
+          created_at: string
+          date_of_birth: string | null
+          full_name: string | null
+          id: string
+          location: string | null
+          phone: string | null
+          preferred_language: string
+          updated_at: string
+          user_id: string
+          user_type: string
+        }
+        Insert: {
+          aadhar_number?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          phone?: string | null
+          preferred_language?: string
+          updated_at?: string
+          user_id: string
+          user_type?: string
+        }
+        Update: {
+          aadhar_number?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          phone?: string | null
+          preferred_language?: string
+          updated_at?: string
+          user_id?: string
+          user_type?: string
+        }
+        Relationships: []
+      }
+      viability_scans: {
+        Row: {
+          ai_analysis: string | null
+          ai_suggestion: string | null
+          created_at: string
+          crop_type: string | null
+          damage_level: string | null
+          id: string
+          image_url: string | null
+          usable_percentage: number | null
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: string | null
+          ai_suggestion?: string | null
+          created_at?: string
+          crop_type?: string | null
+          damage_level?: string | null
+          id?: string
+          image_url?: string | null
+          usable_percentage?: number | null
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: string | null
+          ai_suggestion?: string | null
+          created_at?: string
+          crop_type?: string | null
+          damage_level?: string | null
+          id?: string
+          image_url?: string | null
+          usable_percentage?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      waste_matches: {
+        Row: {
+          buyer_name: string
+          buyer_type: string
+          created_at: string
+          crop_type: string
+          distance_km: number | null
+          farmer_id: string
+          id: string
+          price_per_kg: number | null
+          quantity_kg: number | null
+          status: string
+        }
+        Insert: {
+          buyer_name: string
+          buyer_type: string
+          created_at?: string
+          crop_type: string
+          distance_km?: number | null
+          farmer_id: string
+          id?: string
+          price_per_kg?: number | null
+          quantity_kg?: number | null
+          status?: string
+        }
+        Update: {
+          buyer_name?: string
+          buyer_type?: string
+          created_at?: string
+          crop_type?: string
+          distance_km?: number | null
+          farmer_id?: string
+          id?: string
+          price_per_kg?: number | null
+          quantity_kg?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
