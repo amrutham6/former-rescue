@@ -92,6 +92,31 @@ export default function Auth() {
                     className="pl-10 bg-muted border-border"
                   />
                 </div>
+                {/* User Type Selection */}
+                <div>
+                  <p className="text-sm font-medium text-foreground mb-2">I am a:</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      { value: "farmer" as const, label: "🌾 Farmer / Seller", desc: "I grow & sell crops" },
+                      { value: "buyer" as const, label: "🛒 Buyer", desc: "I buy crop waste" },
+                      { value: "cattle_owner" as const, label: "🐄 Cattle Owner", desc: "I need fodder" },
+                    ]).map((t) => (
+                      <button
+                        key={t.value}
+                        type="button"
+                        onClick={() => setUserType(t.value)}
+                        className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 text-xs font-medium transition-all ${
+                          userType === t.value
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border bg-muted text-muted-foreground hover:border-primary/40"
+                        }`}
+                      >
+                        <span className="text-lg">{t.label.split(" ")[0]}</span>
+                        <span>{t.label.split(" ").slice(1).join(" ")}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </>
             )}
             <div className="relative">
