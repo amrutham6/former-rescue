@@ -3,10 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, Recycle, Leaf, ScanLine, Warehouse,
-  FileCheck, Sprout, Mic, Bell, Menu, X, ChevronRight, Globe
+  FileCheck, Sprout, Mic, Bell, Menu, X, ChevronRight, Globe, LogOut
 } from "lucide-react";
 import { LanguageSelector } from "./LanguageSelector";
 import { NotificationBell } from "./NotificationBell";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
