@@ -33,7 +33,7 @@ export default function AgroConnect() {
   const [postType, setPostType] = useState<"waste_available" | "fodder_needed" | "manure_exchange">("waste_available");
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState<string>("farmer");
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
 
   // Use profile from AuthContext instead of separate fetch
@@ -42,18 +42,25 @@ export default function AgroConnect() {
   }, [profile]);
 
   const fetchPosts = async () => {
-    let q = supabase.from("community_posts").select("*").eq("status", "active").order("created_at", { ascending: false });
-    if (filter === "waste_available") q = q.eq("post_type", "waste_available");
-    if (filter === "fodder_needed") q = q.eq("post_type", "fodder_needed");
-    
-    // Buyers see posts from sellers/cattle owners (not their own type)
-    // Sellers see fodder_needed posts, cattle owners see waste_available posts
-    if (userType === "buyer") {
-      q = q.in("post_type", ["waste_available", "manure_exchange"]);
-    }
-    
-    const { data } = await q;
-    if (data) setPosts(data as Post[]);
+    const { data: postsData } = await supabase.from("community_posts").select("*").eq("status", "active").order("created_at", { ascending: false });
+    if (!postsData) return;
+
+    // Fetch profiles for all post authors
+    const userIds = [...new Set(postsData.map(p => p.user_id))];
+    const { data: profilesData } = await supabase.from("profiles").select("user_id, full_name, user_type").in("user_id", userIds);
+    const profileMap = new Map((profilesData || []).map(p => [p.user_id, p]));
+
+    let enriched: Post[] = postsData.map(p => ({
+      ...p,
+      poster_name: profileMap.get(p.user_id)?.full_name || null,
+      poster_type: profileMap.get(p.user_id)?.user_type || "farmer",
+    }));
+
+    if (filter === "waste_available") enriched = enriched.filter(p => p.post_type === "waste_available");
+    if (filter === "fodder_needed") enriched = enriched.filter(p => p.post_type === "fodder_needed");
+    if (userType === "buyer") enriched = enriched.filter(p => ["waste_available", "manure_exchange"].includes(p.post_type));
+
+    setPosts(enriched);
   };
 
   useEffect(() => { fetchPosts(); }, [filter, userType]);
