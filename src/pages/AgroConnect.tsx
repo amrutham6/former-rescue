@@ -18,7 +18,7 @@ interface Post {
   location: string | null;
   status: string;
   created_at: string;
-  profiles?: { full_name: string | null; location: string | null; user_type: string } | null;
+  
 }
 
 export default function AgroConnect() {
