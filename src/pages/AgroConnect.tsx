@@ -101,7 +101,11 @@ export default function AgroConnect() {
           <h1 className="font-display text-2xl font-bold text-foreground flex items-center gap-2">
             <Users className="w-7 h-7 text-primary" /> AgroConnect Community
           </h1>
-          <p className="text-muted-foreground text-sm mt-1">Exchange crop waste for manure. Build a circular ecosystem.</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            {userType === "buyer"
+              ? "Browse crop waste & fodder available from farmers and cattle owners."
+              : "Exchange crop waste for manure. Build a circular ecosystem."}
+          </p>
         </div>
         <Button onClick={() => setShowForm(true)} className="gradient-hero text-primary-foreground shadow-glow-primary gap-2">
           <Plus className="w-4 h-4" /> Post Availability
