@@ -35,7 +35,7 @@ export default function AgroConnect() {
   const { toast } = useToast();
 
   const fetchPosts = async () => {
-    let q = supabase.from("community_posts").select("*, profiles(full_name, location, user_type)").eq("status", "active").order("created_at", { ascending: false });
+    let q = supabase.from("community_posts").select("*").eq("status", "active").order("created_at", { ascending: false });
     if (filter === "waste_available") q = q.eq("post_type", "waste_available");
     if (filter === "fodder_needed") q = q.eq("post_type", "fodder_needed");
     const { data } = await q;
