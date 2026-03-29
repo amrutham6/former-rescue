@@ -34,7 +34,7 @@ export default function Auth() {
           email,
           password,
           options: {
-            data: { full_name: fullName, phone },
+            data: { full_name: fullName, phone, user_type: userType },
             emailRedirectTo: window.location.origin,
           },
         });
