@@ -24,7 +24,21 @@ const navItems = [
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
+
+  const userTypeBadge = (type: string) => {
+    const config: Record<string, { emoji: string; label: string; cls: string }> = {
+      farmer: { emoji: "🌾", label: "Farmer", cls: "bg-success/10 text-success" },
+      buyer: { emoji: "🛒", label: "Buyer", cls: "bg-info/10 text-info" },
+      cattle_owner: { emoji: "🐄", label: "Cattle Owner", cls: "bg-warning/10 text-warning" },
+    };
+    const c = config[type] || config.farmer;
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${c.cls}`}>
+        {c.emoji} {c.label}
+      </span>
+    );
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
