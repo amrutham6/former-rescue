@@ -3,10 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Users, Recycle, Leaf, ScanLine, Warehouse,
-  FileCheck, Sprout, Mic, Bell, Menu, X, ChevronRight, Globe
+  FileCheck, Sprout, Mic, Bell, Menu, X, ChevronRight, Globe, LogOut
 } from "lucide-react";
 import { LanguageSelector } from "./LanguageSelector";
 import { NotificationBell } from "./NotificationBell";
+import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -23,6 +24,7 @@ const navItems = [
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -87,12 +89,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="px-4 py-4 border-t border-sidebar-border">
             <div className="flex items-center gap-3 px-3 py-2">
               <div className="w-8 h-8 rounded-full gradient-hero flex items-center justify-center text-xs font-bold text-primary-foreground">
-                F
+                {user?.email?.[0]?.toUpperCase() || "F"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">Farmer</p>
-                <p className="text-xs text-sidebar-foreground/50">Free Plan</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.user_metadata?.full_name || user?.email || "Farmer"}</p>
+                <p className="text-xs text-sidebar-foreground/50">{user?.email}</p>
               </div>
+              <button onClick={signOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors" title="Sign out">
+                <LogOut className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </div>
