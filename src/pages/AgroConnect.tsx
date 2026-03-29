@@ -142,7 +142,7 @@ export default function AgroConnect() {
                   {post.post_type === "fodder_needed" ? <Cow className="w-5 h-5 text-secondary-foreground" /> : <Wheat className="w-5 h-5 text-primary-foreground" />}
                 </div>
                 <div>
-                  <p className="font-display font-semibold text-foreground">{post.profiles?.full_name || "Farmer"}</p>
+                  <p className="font-display font-semibold text-foreground">Farmer</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     {post.location && <><MapPin className="w-3 h-3" /> {post.location}</>}
                   </div>
