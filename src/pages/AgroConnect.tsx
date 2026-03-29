@@ -18,7 +18,8 @@ interface Post {
   location: string | null;
   status: string;
   created_at: string;
-  
+  poster_name: string | null;
+  poster_type: string;
 }
 
 export default function AgroConnect() {
