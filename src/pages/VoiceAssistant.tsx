@@ -76,35 +76,10 @@ export default function VoiceAssistant() {
   };
 
   const speak = (text: string) => {
-    // Cancel any ongoing speech first
-    speechSynthesis.cancel();
-    
     const langMap: Record<string, string> = { en: "en-US", te: "te-IN", hi: "hi-IN", mr: "mr-IN", kn: "kn-IN" };
-    const targetLang = langMap[language] || "en-US";
-
-    const doSpeak = () => {
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = targetLang;
-      // Try to find a matching voice
-      const voices = speechSynthesis.getVoices();
-      const match = voices.find(v => v.lang === targetLang) || voices.find(v => v.lang.startsWith(targetLang.split("-")[0]));
-      if (match) utterance.voice = match;
-      utterance.rate = 0.9;
-      utterance.onerror = (e) => console.error("TTS error:", e);
-      speechSynthesis.speak(utterance);
-    };
-
-    // Voices may not be loaded yet
-    if (speechSynthesis.getVoices().length === 0) {
-      speechSynthesis.onvoiceschanged = () => {
-        doSpeak();
-        speechSynthesis.onvoiceschanged = null;
-      };
-      // Fallback if event never fires
-      setTimeout(doSpeak, 500);
-    } else {
-      doSpeak();
-    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = langMap[language] || "en-US";
+    speechSynthesis.speak(utterance);
   };
 
   return (
