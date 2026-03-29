@@ -31,18 +31,34 @@ export default function AgroConnect() {
   const [loc, setLoc] = useState("");
   const [postType, setPostType] = useState<"waste_available" | "fodder_needed" | "manure_exchange">("waste_available");
   const [loading, setLoading] = useState(false);
+  const [userType, setUserType] = useState<string>("farmer");
   const { user } = useAuth();
   const { toast } = useToast();
+
+  // Fetch user profile to get user_type
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("user_type").eq("user_id", user.id).single().then(({ data }) => {
+      if (data) setUserType(data.user_type);
+    });
+  }, [user]);
 
   const fetchPosts = async () => {
     let q = supabase.from("community_posts").select("*").eq("status", "active").order("created_at", { ascending: false });
     if (filter === "waste_available") q = q.eq("post_type", "waste_available");
     if (filter === "fodder_needed") q = q.eq("post_type", "fodder_needed");
+    
+    // Buyers see posts from sellers/cattle owners (not their own type)
+    // Sellers see fodder_needed posts, cattle owners see waste_available posts
+    if (userType === "buyer") {
+      q = q.in("post_type", ["waste_available", "manure_exchange"]);
+    }
+    
     const { data } = await q;
     if (data) setPosts(data as Post[]);
   };
 
-  useEffect(() => { fetchPosts(); }, [filter]);
+  useEffect(() => { fetchPosts(); }, [filter, userType]);
 
   const handlePost = async () => {
     if (!user || !title.trim()) return;
