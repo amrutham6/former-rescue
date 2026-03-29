@@ -36,13 +36,10 @@ export default function AgroConnect() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Fetch user profile to get user_type
+  // Use profile from AuthContext instead of separate fetch
   useEffect(() => {
-    if (!user) return;
-    supabase.from("profiles").select("user_type").eq("user_id", user.id).single().then(({ data }) => {
-      if (data) setUserType(data.user_type);
-    });
-  }, [user]);
+    if (profile) setUserType(profile.user_type);
+  }, [profile]);
 
   const fetchPosts = async () => {
     let q = supabase.from("community_posts").select("*").eq("status", "active").order("created_at", { ascending: false });
