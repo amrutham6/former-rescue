@@ -1,19 +1,20 @@
 import { useState } from "react";
 import { Globe, Check } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const languages = [
-  { code: "en", label: "English", native: "English" },
-  { code: "te", label: "Telugu", native: "తెలుగు" },
-  { code: "hi", label: "Hindi", native: "हिन्दी" },
-  { code: "mr", label: "Marathi", native: "मराठी" },
-  { code: "kn", label: "Kannada", native: "ಕನ್ನಡ" },
+  { code: "en" as const, label: "English", native: "English" },
+  { code: "te" as const, label: "Telugu", native: "తెలుగు" },
+  { code: "hi" as const, label: "Hindi", native: "हिन्दी" },
+  { code: "mr" as const, label: "Marathi", native: "मराठी" },
+  { code: "kn" as const, label: "Kannada", native: "ಕನ್ನಡ" },
 ];
 
 export function LanguageSelector() {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("en");
+  const { language, setLanguage } = useLanguage();
 
-  const current = languages.find((l) => l.code === selected)!;
+  const current = languages.find((l) => l.code === language)!;
 
   return (
     <div className="relative">
@@ -33,7 +34,7 @@ export function LanguageSelector() {
               <button
                 key={lang.code}
                 onClick={() => {
-                  setSelected(lang.code);
+                  setLanguage(lang.code);
                   setOpen(false);
                 }}
                 className="flex items-center gap-3 w-full px-4 py-2.5 text-sm hover:bg-muted transition-colors"
@@ -42,7 +43,7 @@ export function LanguageSelector() {
                   <span className="font-medium text-foreground">{lang.native}</span>
                   <span className="text-muted-foreground ml-2">{lang.label}</span>
                 </span>
-                {selected === lang.code && <Check className="w-4 h-4 text-primary" />}
+                {language === lang.code && <Check className="w-4 h-4 text-primary" />}
               </button>
             ))}
           </div>
