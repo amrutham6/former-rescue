@@ -106,8 +106,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 {user?.email?.[0]?.toUpperCase() || "F"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.user_metadata?.full_name || user?.email || "Farmer"}</p>
-                <p className="text-xs text-sidebar-foreground/50">{user?.email}</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">{profile?.full_name || user?.user_metadata?.full_name || user?.email || "Farmer"}</p>
+                {profile && userTypeBadge(profile.user_type)}
               </div>
               <button onClick={signOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors" title="Sign out">
                 <LogOut className="w-4 h-4" />
