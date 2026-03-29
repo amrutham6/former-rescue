@@ -1,13 +1,9 @@
+import { useEffect, useState } from "react";
 import { Users, Recycle, Leaf, ScanLine, Warehouse, FileCheck, Sprout, Mic, TrendingUp, IndianRupee, BarChart3, ShieldCheck } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { FeatureCard } from "@/components/FeatureCard";
-
-const stats = [
-  { title: "Waste Converted", value: "2.4T", subtitle: "This month", icon: Recycle, variant: "primary" as const },
-  { title: "Revenue Earned", value: "₹18K", subtitle: "+12% from last month", icon: IndianRupee, variant: "gold" as const },
-  { title: "Carbon Credits", value: "156", subtitle: "CO₂ saved: 2.1 tons", icon: Leaf, variant: "earth" as const },
-  { title: "Active Matches", value: "23", subtitle: "Buyers & cattle owners", icon: BarChart3, variant: "info" as const },
-];
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const features = [
   { title: "AgroConnect", description: "Connect with cattle owners. Exchange waste for manure.", icon: Users, path: "/agroconnect", color: "primary" as const },
@@ -21,35 +17,55 @@ const features = [
 ];
 
 export default function Index() {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({ posts: 0, credits: 0, scans: 0, claims: 0 });
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const [posts, carbon, scans, claims] = await Promise.all([
+        supabase.from("community_posts").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("carbon_activities").select("credits_earned").eq("user_id", user.id),
+        supabase.from("viability_scans").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+        supabase.from("insurance_claims").select("id", { count: "exact", head: true }).eq("user_id", user.id),
+      ]);
+      const totalCredits = carbon.data?.reduce((s, a) => s + a.credits_earned, 0) || 0;
+      setStats({
+        posts: posts.count || 0,
+        credits: totalCredits,
+        scans: scans.count || 0,
+        claims: claims.count || 0,
+      });
+    };
+    load();
+  }, [user]);
+
   return (
     <div className="space-y-8">
-      {/* Hero */}
       <div className="gradient-hero rounded-2xl p-8 text-primary-foreground">
         <div className="flex items-center gap-2 mb-2">
           <ShieldCheck className="w-5 h-5 opacity-80" />
           <span className="text-sm font-medium opacity-80">Former Rescue AI</span>
         </div>
         <h1 className="font-display text-3xl lg:text-4xl font-bold">
-          Convert Crop Loss into Profit
+          Welcome, {user?.user_metadata?.full_name || "Farmer"}! 🌾
         </h1>
         <p className="text-primary-foreground/70 mt-2 max-w-xl text-sm lg:text-base">
-          AI-powered smart farming system connecting farmers, buyers, and cattle owners. 
-          Reduce waste, earn income, and protect the environment.
+          Convert crop loss into profit using AI, community collaboration, and sustainability.
         </p>
         <div className="flex items-center gap-2 mt-4">
           <TrendingUp className="w-4 h-4" />
-          <span className="text-sm font-medium">Your farm efficiency increased by 24% this month</span>
+          <span className="text-sm font-medium">You've earned {stats.credits} carbon credits so far</span>
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((s) => (
-          <StatCard key={s.title} {...s} />
-        ))}
+        <StatCard title="Community Posts" value={String(stats.posts)} subtitle="Your active posts" icon={Users} variant="primary" />
+        <StatCard title="Carbon Credits" value={String(stats.credits)} subtitle={`≈ ₹${stats.credits * 50}`} icon={Leaf} variant="gold" />
+        <StatCard title="Crop Scans" value={String(stats.scans)} subtitle="AI analyses done" icon={ScanLine} variant="earth" />
+        <StatCard title="Insurance Claims" value={String(stats.claims)} subtitle="Claims filed" icon={FileCheck} variant="info" />
       </div>
 
-      {/* Features */}
       <div>
         <h2 className="font-display text-xl font-semibold text-foreground mb-4">Quick Access</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
