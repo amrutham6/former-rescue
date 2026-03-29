@@ -18,7 +18,8 @@ interface Post {
   location: string | null;
   status: string;
   created_at: string;
-  
+  poster_name: string | null;
+  poster_type: string;
 }
 
 export default function AgroConnect() {
@@ -32,30 +33,34 @@ export default function AgroConnect() {
   const [postType, setPostType] = useState<"waste_available" | "fodder_needed" | "manure_exchange">("waste_available");
   const [loading, setLoading] = useState(false);
   const [userType, setUserType] = useState<string>("farmer");
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { toast } = useToast();
 
-  // Fetch user profile to get user_type
+  // Use profile from AuthContext instead of separate fetch
   useEffect(() => {
-    if (!user) return;
-    supabase.from("profiles").select("user_type").eq("user_id", user.id).single().then(({ data }) => {
-      if (data) setUserType(data.user_type);
-    });
-  }, [user]);
+    if (profile) setUserType(profile.user_type);
+  }, [profile]);
 
   const fetchPosts = async () => {
-    let q = supabase.from("community_posts").select("*").eq("status", "active").order("created_at", { ascending: false });
-    if (filter === "waste_available") q = q.eq("post_type", "waste_available");
-    if (filter === "fodder_needed") q = q.eq("post_type", "fodder_needed");
-    
-    // Buyers see posts from sellers/cattle owners (not their own type)
-    // Sellers see fodder_needed posts, cattle owners see waste_available posts
-    if (userType === "buyer") {
-      q = q.in("post_type", ["waste_available", "manure_exchange"]);
-    }
-    
-    const { data } = await q;
-    if (data) setPosts(data as Post[]);
+    const { data: postsData } = await supabase.from("community_posts").select("*").eq("status", "active").order("created_at", { ascending: false });
+    if (!postsData) return;
+
+    // Fetch profiles for all post authors
+    const userIds = [...new Set(postsData.map(p => p.user_id))];
+    const { data: profilesData } = await supabase.from("profiles").select("user_id, full_name, user_type").in("user_id", userIds);
+    const profileMap = new Map((profilesData || []).map(p => [p.user_id, p]));
+
+    let enriched: Post[] = postsData.map(p => ({
+      ...p,
+      poster_name: profileMap.get(p.user_id)?.full_name || null,
+      poster_type: profileMap.get(p.user_id)?.user_type || "farmer",
+    }));
+
+    if (filter === "waste_available") enriched = enriched.filter(p => p.post_type === "waste_available");
+    if (filter === "fodder_needed") enriched = enriched.filter(p => p.post_type === "fodder_needed");
+    if (userType === "buyer") enriched = enriched.filter(p => ["waste_available", "manure_exchange"].includes(p.post_type));
+
+    setPosts(enriched);
   };
 
   useEffect(() => { fetchPosts(); }, [filter, userType]);
@@ -162,7 +167,16 @@ export default function AgroConnect() {
                   {post.post_type === "fodder_needed" ? <Cow className="w-5 h-5 text-secondary-foreground" /> : <Wheat className="w-5 h-5 text-primary-foreground" />}
                 </div>
                 <div>
-                  <p className="font-display font-semibold text-foreground">Farmer</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-display font-semibold text-foreground">{post.poster_name || "Farmer"}</p>
+                    <span className={`inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+                      post.poster_type === "buyer" ? "bg-info/10 text-info"
+                      : post.poster_type === "cattle_owner" ? "bg-warning/10 text-warning"
+                      : "bg-success/10 text-success"
+                    }`}>
+                      {post.poster_type === "buyer" ? "🛒 Buyer" : post.poster_type === "cattle_owner" ? "🐄 Cattle Owner" : "🌾 Farmer"}
+                    </span>
+                  </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     {post.location && <><MapPin className="w-3 h-3" /> {post.location}</>}
                   </div>

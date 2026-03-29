@@ -24,7 +24,21 @@ const navItems = [
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
-  const { user, signOut } = useAuth();
+  const { user, profile, signOut } = useAuth();
+
+  const userTypeBadge = (type: string) => {
+    const config: Record<string, { emoji: string; label: string; cls: string }> = {
+      farmer: { emoji: "🌾", label: "Farmer", cls: "bg-success/10 text-success" },
+      buyer: { emoji: "🛒", label: "Buyer", cls: "bg-info/10 text-info" },
+      cattle_owner: { emoji: "🐄", label: "Cattle Owner", cls: "bg-warning/10 text-warning" },
+    };
+    const c = config[type] || config.farmer;
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${c.cls}`}>
+        {c.emoji} {c.label}
+      </span>
+    );
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -92,8 +106,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 {user?.email?.[0]?.toUpperCase() || "F"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.user_metadata?.full_name || user?.email || "Farmer"}</p>
-                <p className="text-xs text-sidebar-foreground/50">{user?.email}</p>
+                <p className="text-sm font-medium text-sidebar-foreground truncate">{profile?.full_name || user?.user_metadata?.full_name || user?.email || "Farmer"}</p>
+                {profile && userTypeBadge(profile.user_type)}
               </div>
               <button onClick={signOut} className="text-sidebar-foreground/50 hover:text-sidebar-foreground transition-colors" title="Sign out">
                 <LogOut className="w-4 h-4" />
